@@ -1,0 +1,15 @@
+*.sqlite*
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeders; // abaikan jika sudah ada
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $this->call([
+            UserSeeder::class,
+        ]);
+    }
+}
