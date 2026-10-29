@@ -19,8 +19,8 @@
             </a>
             <span class="text-xs bg-teal-800 text-teal-200 px-2 py-1 rounded-md hidden sm:inline-block font-medium">laundry express</span>
         </div>
-        <nav class="flex items-center space-x-1 sm:space-x-2 text-xs font-bold">
-            <a href="{{ route('dashboard') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('dashboard') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-white' }}">Beranda</a>
+        <nav class="navbar">
+            <a href="{{ route('dashboard') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('dashboard') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-black' }}">Beranda</a>
             <a href="{{ route('layanan') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('layanan') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-white' }}">Layanan</a>
             <a href="{{ route('pesan') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('pesan*') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-white' }}">Pesan (Cash)</a>
             <a href="{{ route('lacak') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('lacak*') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-white' }}">Lacak</a>
