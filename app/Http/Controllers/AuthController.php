@@ -4,41 +4,57 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class AuthController extends Controller
 {
-    // Tambahkan fungsi ini untuk menampilkan halaman login
-  public function login(Request $request)
+    // Menampilkan halaman form login
+    public function showLoginForm()
     {
-        // 1. Validasi input dari form
+        return view('login');
+    }
+
+    // Memproses login dan memeriksa hak akses (role)
+    public function authenticate(Request $request)
+    {
         $request->validate([
-            'email_or_whatsapp' => ['required'],
+            'email_or_phone' => ['required'],
             'password' => ['required'],
         ]);
 
-        $loginInput = $request->input('email_or_whatsapp');
-        $password = $request->input('password');
+        $input = $request->email_or_phone;
+        // Cek apakah input berupa email atau nomor WhatsApp
+        $fieldType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'whatsapp';
 
-        // 2. Deteksi apakah input berupa email atau nomor WhatsApp
-        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'whatsapp';
-
-        // 3. Coba lakukan autentikasi (pencocokan data & password)
-        if (Auth::attempt([$fieldType => $loginInput, 'password' => $password])) {
+        // Proses Auth bawaan Laravel
+        if (Auth::attempt([$fieldType => $input, 'password' => $request->password])) {
             $request->session()->regenerate();
 
             $user = Auth::user();
 
-            // 4. Arahkan berdasarkan role masing-masing
-            if ($user->role === 'admin') {
-                return redirect()->intended('/dashboard-admin');
+            // LOGIKA PEMISAHAN AKSES (ROLE-BASED REDIRECTION)
+            if (($user->role ?? null) === 'admin' && Route::has('admin.dashboard')) {
+                // Jika admin, arahkan ke panel pengelola
+                return redirect()->intended(route('admin.dashboard'));
             } else {
-                return redirect()->intended('/dashboard-customer');
+                // Jika pelanggan biasa, arahkan ke halaman beranda
+                return redirect()->intended(route('dashboard'));
             }
         }
 
-        // 5. Jika gagal, kembalikan ke halaman login dengan pesan error
+        // Jika login gagal
         return back()->withErrors([
-            'email_or_whatsapp' => 'Nomor WhatsApp/Email atau Kata Sandi yang Anda masukkan salah.',
-        ])->onlyInput('email_or_whatsapp');
+            'email_or_phone' => 'Nomor WhatsApp/Email atau kata sandi yang Anda masukkan salah.',
+        ])->withInput();
+    }
+
+    // Proses Logout
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

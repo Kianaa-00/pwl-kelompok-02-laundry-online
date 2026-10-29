@@ -1,0 +1,22 @@
+/* Amar Laundry Custom CSS */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #0f2d2e;
+}
+::-webkit-scrollbar-thumb {
+    background: #14b8a6;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #2dd4bf;
+}
+
