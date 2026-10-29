@@ -7,52 +7,92 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# 🧺 Amar Laundry Express - Web Application (Minggu 03)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Aplikasi manajemen dan pemesanan layanan laundry berbasis web yang dikembangkan menggunakan **Laravel 11** dan **Tailwind CSS**. Proyek ini disusun untuk memenuhi **Tugas Minggu 3 Praktikum Pemrograman Web Lanjut (PWL)**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 📌 Informasi Repository & Versi
+* **Repository:** [pwl-kelompok-02-laundry-online](https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git)
+* **Tag Tugas:** `minggu-03`
+* **Framework Version:** Laravel 13.x
+* **PHP Version:** >= 8.5
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 💻 Panduan Instalasi & Penggunaan Lokal
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggota kelompok:
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+1. **Clone Repository:**
+   ```bash
+   git clone https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git
+   cd pwl-kelompok-02-laundry-online
+   ```
 
-## Agentic Development
+2. **Install Dependensi PHP & JavaScript:**
+   ```bash
+   composer install
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+3. **Konfigurasi Environment File:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-```bash
-composer require laravel/boost --dev
+4. **Jalankan Web Server Laravel:**
+   ```bash
+   php artisan serve
+   ```
+   Akses aplikasi di *browser* pada alamat `http://127.0.0.1:8000` atau melalui domain lokal Laragon `http://laundry.test`.
 
-php artisan boost:install
-```
+---
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## 🗺️ Route Map (Pemetaan Rute Minggu 3)
 
-## Contributing
+Sesuai dengan kriteria tugas, proyek ini mengimplementasikan $\ge 5$ rute terstruktur yang memanfaatkan *Named Routes*, *Route Parameter*, serta penanganan *HTTP Method* (GET/POST):
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Method | URL | Action / Controller | Named Route | Deskripsi & Fitur |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/` | `PageController@index` | `home` | Halaman Utama / Beranda (Wireframe & Responsif) |
+| `GET` | `/layanan` | `PageController@layanan` | `layanan` | Daftar Layanan & Pricelist (Render dari Dummy Data Array) |
+| `GET` | `/login` | `AuthController@showLoginForm` | `login` | Form Login Pelanggan & Pengelola |
+| `POST` | `/login` | `AuthController@authenticate` | `login.process` | Memproses Login & Memisahkan Role (Admin vs Customer) |
+| `GET` | `/pesan` | `OrderController@create` | `pesan` | Form Pemesanan Laundry (Cash / Tunai) |
+| `POST` | `/pesan` | `OrderController@store` | `pesan.store` | Memproses Data Form Pemesanan |
+| `GET` | `/lacak` | `OrderController@lacakIndex` | `lacak` | Form Lacak Resi Status Cucian |
+| `GET` | `/lacak/{resi}` | `OrderController@lacakDetail` | `lacak.detail` | Lacak Status Cucian (Menggunakan **Route Parameter**) |
+| `GET` | `/admin/dashboard` | `Admin\DashboardController@index` | `admin.dashboard` | Dashboard Panel Pengelola/Admin |
+| `GET` | `/admin/kasir` | `Admin\CashierController@index` | `admin.kasir` | Kasir POS Input Transaksi Tunai |
+| `GET` | `/admin/pesanan` | `Admin\AdminOrderController@index` | `admin.pesanan.index` | Kelola Antrean & Status Cucian |
+| `GET` | `/admin/laporan` | `Admin\FinanceController@index` | `admin.laporan` | Laporan Keuangan Operasional |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🛠️ Arsitektur & Checklist Pemenuhan Tugas
 
-## Security Vulnerabilities
+Berikut adalah pemenuhan checklist tugas berdasarkan kriteria penilaian:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 1. Master Layout & Partials (25% + 15%)
+* **Master Layout Publik:** `resources/views/layouts/app.blade.php`
+* **Master Layout Admin:** `resources/views/layouts/admin.blade.php`
+* **Components / Partials:**
+  * Navigasi publik dan panel pengelola terpisah.
+  * Footer universal dan partial penanganan *alert/error*.
 
-## License
+### 2. Controller & Data Dummy (15%)
+* **`PageController`:** Mengelola halaman statis dan mengirimkan data dummy array pricelist/layanan ke Blade view `layanan.blade.php`.
+* **`OrderController`:** Mengelola siklus form pemesanan dan penyajian dummy data lacak status pesanan berdasarkan parameter resi.
+* **`AuthController`:** Mengatur logika pengarahan halaman (*redirection*) berdasarkan role akses pengguna (Admin mengarah ke `/admin/dashboard`, Customer mengarah ke `/`).
+* **`Admin\*Controllers`:** Mengelola dashboard metrik operasional, antrean cucian, dan laporan keuangan admin.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 3. Tampilan & Responsivitas Wireframe (15%)
+Seluruh halaman disesuaikan agar responsif di berbagai ukuran layar (mobile & desktop) menggunakan kerangka Tailwind CSS:
+* Beranda (`home.blade.php`)
+* Layanan & Harga (`layanan.blade.php`)
+* Form Pesanan (`pesan.blade.php`)
+* Lacak Resi (`lacak.blade.php`)
+* Form Login (`login.blade.php`)
+* Dashboard Admin (`admin/dashboard.blade.php`)
