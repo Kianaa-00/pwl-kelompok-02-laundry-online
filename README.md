@@ -43,7 +43,7 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggot
 
 1. **Clone Repository:**
    ```bash
-   git clone [https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git](https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git)
+   git clone https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git
    cd pwl-kelompok-02-laundry-online
    ```
 
