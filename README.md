@@ -1,19 +1,35 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <a href="https://laravel.com" target="_blank">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
+  </a>
 </p>
 
-# 🧺 Amar Laundry Express - Web Application (Minggu 03)
+<p align="center">
+  <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-Aplikasi manajemen dan pemesanan layanan laundry berbasis web yang dikembangkan menggunakan **Laravel 11** dan **Tailwind CSS**. Proyek ini disusun untuk memenuhi **Tugas Minggu 3 Praktikum Pemrograman Web Lanjut (PWL)**.
+# 🧼 Amar Laundry Express - Web Application (Minggu 03)
+
+Aplikasi manajemen dan pemesanan layanan laundry berbasis web yang dikembangkan menggunakan **Laravel 13** dan **Tailwind CSS**. Proyek ini disusun untuk memenuhi **Tugas Minggu 3 Praktikum Pemrograman Web Lanjut (PWL)**.
+
+---
+
+## 👥 Tim Pengembang (Kelompok 02)
+
+| Nama Mahasiswa | NIM | Peran & Tanggung Jawab Utama |
+| :--- | :--- | :--- |
+| **Amar Albar** | 25170017 | Koordinator Projek (Project Management & Task Allocation) |
+| **Naufal Kresna Putra Ardy** | 25170009 | Backend Engineer (API Logic & Core Business Process) |
+| **Anrico Wibowo** | 25170019 | Frontend Engineer (UI Templates & User Interface Design) |
+| **Andhika Meisteva** | 25170016 | Database Architect & QA Documentation Lead |
 
 ---
 
 ## 📌 Informasi Repository & Versi
+
 * **Repository:** [pwl-kelompok-02-laundry-online](https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git)
 * **Tag Tugas:** `minggu-03`
 * **Framework Version:** Laravel 13.x
@@ -27,13 +43,14 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggot
 
 1. **Clone Repository:**
    ```bash
-   git clone https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git
+   git clone [https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git](https://github.com/Kianaa-00/pwl-kelompok-02-laundry-online.git)
    cd pwl-kelompok-02-laundry-online
    ```
 
 2. **Install Dependensi PHP & JavaScript:**
    ```bash
    composer install
+   npm install
    ```
 
 3. **Konfigurasi Environment File:**
@@ -42,8 +59,12 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggot
    php artisan key:generate
    ```
 
-4. **Jalankan Web Server Laravel:**
+4. **Jalankan Asset Compiler & Web Server Laravel:**
    ```bash
+   # Terminal 1: Kompilasi Tailwind CSS
+   npm run dev
+
+   # Terminal 2: Jalankan Server Laravel
    php artisan serve
    ```
    Akses aplikasi di *browser* pada alamat `http://127.0.0.1:8000` atau melalui domain lokal Laragon `http://laundry.test`.
