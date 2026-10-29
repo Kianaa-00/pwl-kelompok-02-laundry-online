@@ -16,23 +16,23 @@
     <header class="bg-teal-900 text-white shadow-lg relative z-20">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-3">
-                <div class="bg-[#ffc72c] text-gray-900 font-extrabold text-xl px-3 py-1 rounded-xl shadow-md">
+                <a href="{{ route('admin.dashboard') }}" class="bg-[#ffc72c] text-gray-900 font-extrabold text-xl px-3 py-1 rounded-xl shadow-md">
                     Amar.
-                </div>
+                </a>
                 <span class="text-xs bg-teal-800 text-teal-200 px-2 py-1 rounded-md hidden sm:inline-block border border-teal-700 font-semibold">Admin Panel</span>
             </div>
 
             <!-- Navigasi Admin -->
             <nav class="hidden md:flex space-x-1 text-xs font-bold">
-                <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Dashboard</a>
-                <a href="{{ route('admin.kasir') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.kasir') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Kasir (POS)</a>
+                <a href="{{ route('admin.dashboard') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.dashboard*') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Dashboard</a>
+                <a href="{{ route('admin.kasir') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.kasir*') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Kasir (POS)</a>
                 <a href="{{ route('admin.pesanan.index') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.pesanan*') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Data Pesanan</a>
-                <a href="{{ route('admin.laporan') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.laporan') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Laporan Keuangan</a>
+                <a href="{{ route('admin.laporan') }}" class="px-4 py-2 rounded-full transition {{ request()->routeIs('admin.laporan*') ? 'bg-[#ffc72c] text-gray-900 shadow' : 'text-teal-100 hover:text-white' }}">Laporan Keuangan</a>
             </nav>
 
             <div class="flex items-center space-x-3">
                 <div class="text-right hidden sm:block">
-                    <p class="text-xs font-bold text-white">Kasir Utama</p>
+                    <p class="text-xs font-bold text-white">{{ Auth::user()->name ?? 'Kasir Utama' }}</p>
                     <p class="text-[10px] text-teal-200">Shift Pagi • Cash Only</p>
                 </div>
                 <form action="{{ route('logout') }}" method="POST">
