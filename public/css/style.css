@@ -20,3 +20,44 @@ body {
     background: #2dd4bf;
 }
 
+/*New changes*/
+:root {
+    --primary: #ffc629;
+    --primary-hover: #ffda65;
+    --dark-green: #105b55;
+    --deep-green: #0b4947;
+    --white: #ffffff;
+    --text-light: #d7eeea;
+    --glass: rgba(255, 255, 255, 0.10);
+}
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Poppins", Arial, sans-serif;
+    color: var(--white);
+    background: linear-gradient(
+        135deg,
+        #155d56,
+        #10534e,
+        #102d3b
+    );
+    background-size: 200% 200%;
+    animation: backgroundMove 12s ease infinite;
+    overflow-x: hidden;
+}
+.slogan {
+    font-size: 50px;
+    font-weight: bold;
+    
+}
+
+@keyframes backgroundMove {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+

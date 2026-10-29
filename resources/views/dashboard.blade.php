@@ -13,7 +13,7 @@
         </div>
 
         <!-- Judul & Slogan Utama -->
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight">
+        <h1 class="slogan">
             CUCI BAJU DISINI<br>
             RESIK GASIK & ASIK!<br>
             <span class="text-[#ffc72c]"></span>
