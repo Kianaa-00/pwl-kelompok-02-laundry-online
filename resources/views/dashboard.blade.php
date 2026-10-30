@@ -37,10 +37,7 @@
 
     <!-- Sisi Kanan: Visual Bersih Tanpa Info Lokasi -->
     <div class="relative flex justify-center items-center">
-        <!-- Background Tulisan Korea Sederhana -->
-        <div class="absolute -z-10 text-[140px] sm:text-[180px] font-black text-teal-700/20 select-none pointer-events-none top-[-50px]">
-            세탁
-        </div>
+        
 
         <!-- Card Ilustrasi (Background Tosca diubah jadi nuansa biru muda/sky) -->
         <div class="relative w-full max-w-md bg-sky-200/50 p-6 rounded-3xl backdrop-blur-md border border-sky-300/40 shadow-2xl">
