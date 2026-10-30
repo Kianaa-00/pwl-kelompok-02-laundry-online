@@ -39,7 +39,7 @@ Aplikasi manajemen dan pemesanan layanan laundry berbasis web yang dikembangkan 
 
 ## 💻 Panduan Instalasi & Penggunaan Lokal
 
-Ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggota kelompok:
+ikuti langkah-langkah berikut untuk menjalankan proyek di komputer/laptop anggota kelompok:
 
 1. **Clone Repository:**
    ```bash
