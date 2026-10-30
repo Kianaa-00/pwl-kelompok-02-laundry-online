@@ -12,7 +12,7 @@
 <body class="flex flex-col justify-between min-h-screen relative overflow-x-hidden bg-gradient-to-br from-teal-900 via-teal-800 to-gray-900 text-white">
 
     <!-- NAVBAR UTAMA -->
-    <header class="max-w-7xl mx-auto w-full px-6 pt-6 flex justify-between items-center relative z-20">
+    <header class="navbar-main">
         <div class="flex items-center space-x-2">
             <a href="{{ route('dashboard') }}" class="bg-[#ffc72c] text-gray-900 font-extrabold text-xl px-3 py-1 rounded-xl shadow-md">
                 Amar.
