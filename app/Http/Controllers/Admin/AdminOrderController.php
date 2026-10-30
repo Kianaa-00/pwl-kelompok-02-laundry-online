@@ -7,11 +7,9 @@ use Illuminate\Http\Request;
 
 class AdminOrderController extends Controller
 {
-    // Menampilkan daftar seluruh pesanan untuk dikelola admin
-    public function index()
+    private function getDefaultOrders()
     {
-        // Dummy data daftar pesanan
-        $orders = [
+        return [
             [
                 'id' => 1,
                 'resi' => 'AMAR-8832',
@@ -29,14 +27,38 @@ class AdminOrderController extends Controller
                 'status' => 'Menunggu Antar'
             ]
         ];
+    }
 
+    // Menampilkan daftar seluruh pesanan untuk dikelola admin
+    public function index()
+    {
+        $orders = session()->get('admin_orders', $this->getDefaultOrders());
         return view('admin.datapesan', compact('orders'));
     }
 
     // Memperbarui status cucian
     public function updateStatus(Request $request, $id)
     {
-        // Simulasi update status
-        return back()->with('success', 'Status pesanan berhasil diperbarui!');
+        $newStatus = $request->input('status', 'Sedang Dicuci');
+        $orders = session()->get('admin_orders', $this->getDefaultOrders());
+
+        foreach ($orders as &$order) {
+            if ($order['id'] == $id) {
+                $order['status'] = $newStatus;
+
+                // Sinkronkan ke session order customer jika ada
+                $resi = $order['resi'];
+                if (session()->has("order_{$resi}")) {
+                    $custOrder = session()->get("order_{$resi}");
+                    $custOrder['status'] = $newStatus;
+                    session()->put("order_{$resi}", $custOrder);
+                }
+                break;
+            }
+        }
+
+        session()->put('admin_orders', $orders);
+
+        return back()->with('success', "Status pesanan berhasil diperbarui menjadi '{$newStatus}'!");
     }
 }
