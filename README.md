@@ -117,3 +117,4 @@ Seluruh halaman disesuaikan agar responsif di berbagai ukuran layar (mobile & de
 * Lacak Resi (`lacak.blade.php`)
 * Form Login (`login.blade.php`)
 * Dashboard Admin (`admin/dashboard.blade.php`)
+
