@@ -20,11 +20,11 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama'     => 'required|string|max:255',
             'whatsapp' => 'required|string|max:20',
-            'layanan' => 'required|string',
-            'alamat' => 'required|string',
-            'catatan' => 'nullable|string|max:500',
+            'layanan'  => 'required|string',
+            'alamat'   => 'required|string',
+            'catatan'  => 'nullable|string|max:500',
         ]);
 
         // Mengenali layanan yang dipilih pelanggan
