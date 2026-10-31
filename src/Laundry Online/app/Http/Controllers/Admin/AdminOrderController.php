@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\TrackingLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminOrderController extends Controller
 {
@@ -96,6 +97,9 @@ class AdminOrderController extends Controller
         }
         session()->put('admin_orders', $orders);
 
-        return back()->with('success', "Status pesanan berhasil diperbarui menjadi '{$newStatus}'!");
+        return back()->with(
+            'success',
+            "Status pesanan berhasil diperbarui menjadi '{$validated['status']}'!"
+        );
     }
 }
