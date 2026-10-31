@@ -17,6 +17,14 @@
                 <span>{{ session('success') }}</span>
             </div>
         @endif
+        
+        @if($errors->has('resi'))
+            <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-xl text-xs font-semibold mb-6 flex items-start space-x-2">
+                <span class="text-red-600 font-bold text-sm">!</span>
+                <span>{{ $errors->first('resi') }}</span>
+            </div>
+        @endif
+
 
         <!-- Form Cari Resi -->
         <form action="{{ route('lacak') }}" method="GET" class="flex space-x-2 mb-6">
