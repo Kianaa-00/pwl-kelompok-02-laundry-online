@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Service;
-use App\Models\TrackingLog;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CashierController extends Controller
@@ -15,9 +16,9 @@ class CashierController extends Controller
     // Menampilkan halaman kasir (POS)
     public function index()
     {
-        $todayOrdersCount = Order::whereDate('created_at', today())->count();
+        $todayOrdersCount = Order::whereDate('created_at', Carbon::today())->count();
         $todayIncome = OrderDetail::whereHas('order', function ($query) {
-            $query->whereDate('created_at', today());
+            $query->whereDate('created_at', Carbon::today());
         })->sum('subtotal');
 
         if ($todayOrdersCount === 0) {
@@ -38,7 +39,7 @@ class CashierController extends Controller
             'weight'        => 'required|numeric|min:0.1',
         ]);
 
-        $serviceName = strtolower($request->service_type) === 'express' ? 'Express' : 'Reguler';
+        $serviceName = strtolower((string) $request->service_type) === 'express' ? 'Express' : 'Reguler';
         $service = Service::where('name', $serviceName)->first();
 
         $unitPrice = $service ? (float) $service->price_per_kg : ($serviceName === 'Express' ? 15000 : 8000);
@@ -68,7 +69,7 @@ class CashierController extends Controller
             ]);
 
             $order->trackingLogs()->create([
-                'updated_by'  => auth()->id(),
+                'updated_by'  => Auth::id(),
                 'status'      => 'Sedang Dicuci',
                 'description' => "Transaksi kasir tunai berhasil dicatat ({$weight} Kg - Rp " . number_format($subtotal, 0, ',', '.') . "). Cucian langsung diproses.",
             ]);

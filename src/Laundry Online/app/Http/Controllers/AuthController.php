@@ -21,22 +21,24 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        $input = trim($request->input('email'));
+        $input = trim((string) $request->input('email'));
 
         // Cek apakah input berupa email atau nomor WhatsApp
         $fieldType = filter_var($input, FILTER_VALIDATE_EMAIL) ? 'email' : 'whatsapp';
 
         $credentials = [
             $fieldType => $input,
-            'password' => $request->password,
+            'password' => (string) $request->password,
         ];
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+
+            /** @var \App\Models\User $user */
             $user = Auth::user();
 
             // Pemisahan pengalihan berdasarkan Role
-            if ($user->hasRole('admin')) {
+            if ($user && $user->hasRole('admin')) {
                 return redirect()->intended(route('admin.dashboard'));
             }
 

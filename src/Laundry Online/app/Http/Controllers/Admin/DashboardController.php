@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -14,7 +15,7 @@ class DashboardController extends Controller
     {
         $dbOrderCount = Order::count();
         $dbTodayIncome = (float) OrderDetail::whereHas('order', function ($query) {
-            $query->whereDate('created_at', today());
+            $query->whereDate('created_at', Carbon::today());
         })->sum('subtotal');
         $dbInProcess = Order::whereIn('status', ['Menunggu Cuci', 'Sedang Dicuci', 'Menunggu Antar', 'Menunggu Penjemputan Kurir'])->count();
         $dbCustomers = User::where('role', 'pelanggan')->count();

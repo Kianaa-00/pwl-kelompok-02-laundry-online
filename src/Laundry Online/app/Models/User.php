@@ -2,27 +2,22 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @mixin \Illuminate\Database\Eloquent\Builder
+ */
 #[Fillable(['name', 'email', 'whatsapp', 'role', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -30,11 +25,11 @@ class User extends Authenticatable
         'role',
         'password',
     ];
-    
+
     public function hasRole(string ...$roles): bool
-{
-    return in_array($this->role, $roles, true);
-}
+    {
+        return in_array($this->role, $roles, true);
+    }
 
     protected function casts(): array
     {
@@ -42,15 +37,5 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
-    }
-
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function trackingLogs(): HasMany
-    {
-        return $this->hasMany(TrackingLog::class, 'updated_by');
     }
 }

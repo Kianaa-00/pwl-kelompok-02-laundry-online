@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\TrackingLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class AdminOrderController extends Controller
@@ -19,14 +21,14 @@ class AdminOrderController extends Controller
                 $service = $order->orderDetail?->service;
 
                 return [
-                    'id' => $order->id,
-                    'resi' => $order->resi,
-                    'nama' => $order->customer_name,
-                    'no_hp' => $order->whatsapp,
+                    'id'      => $order->id,
+                    'resi'    => $order->resi,
+                    'nama'    => $order->customer_name,
+                    'no_hp'   => $order->whatsapp,
                     'layanan' => $service
                         ? $service->name . ' (' . $service->duration . ')'
                         : 'Layanan tidak tersedia',
-                    'status' => $order->status,
+                    'status'  => $order->status,
                 ];
             })
             ->all();
@@ -38,7 +40,7 @@ class AdminOrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $validated = $request->validate([
-            'status' => 'required|in:Menunggu Cuci,Sedang Dicuci,Menunggu Antar,Selesai',
+            'status' => 'required|in:Menunggu Penjemputan Kurir,Menunggu Cuci,Sedang Dicuci,Menunggu Antar,Selesai',
         ]);
 
         DB::transaction(function () use ($id, $validated) {
@@ -56,9 +58,9 @@ class AdminOrderController extends Controller
 
             // Menambahkan catatan perubahan pada tracking_logs
             $order->trackingLogs()->create([
-                'updated_by' => auth()->id(),
-                'status' => $validated['status'],
-                'description' => 'Status pesanan diperbarui oleh admin.',
+                'updated_by'  => Auth::id(),
+                'status'      => $validated['status'],
+                'description' => 'Status pesanan diperbarui oleh admin menjadi: ' . $validated['status'],
             ]);
         });
 
