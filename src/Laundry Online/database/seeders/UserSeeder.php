@@ -11,19 +11,19 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // 1. Akun Admin / Pengelola Laundry
-        User::create([
-            'name' => 'Admin Pengelola Amar',
-            'email' => 'admin@laundry.com',
-            'password' => Hash::make('Laundry#2026'), // Sandi untuk login admin
-            'role' => 'admin',
+        User::updateOrCreate(['email' => 'admin@amarlaundry.com'], [
+            'name'     => 'Admin Pengelola Amar',
+            'whatsapp' => '081200000001',
+            'password' => Hash::make('admin123'),
+            'role'     => 'admin',
         ]);
 
-        // 2. Akun Contoh Customer
-        User::create([
-            'name' => 'Budi Santoso',
-            'email_or_whatsapp' => '081234567890', // Bisa login pakai nomor WA
-            'password' => Hash::make('Laundry#2026'), // Sandi untuk login customer
-            'role' => 'customer',
+        // 2. Akun Pelanggan
+        User::updateOrCreate(['email' => 'pelanggan@amarlaundry.com'], [
+            'name'     => 'Budi Santoso',
+            'whatsapp' => '081234567890',
+            'password' => Hash::make('budi123'),
+            'role'     => 'pelanggan',
         ]);
     }
 }

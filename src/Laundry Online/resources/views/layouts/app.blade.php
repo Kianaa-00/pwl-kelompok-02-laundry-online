@@ -27,6 +27,7 @@
             @guest
                 <a href="{{ route('login') }}" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition {{ request()->routeIs('login') ? 'bg-[#ffc72c] text-gray-900' : 'text-teal-100 hover:text-white' }}">Login</a>
             @else
+               
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
                     <button type="submit" class="px-3 py-2 sm:px-4 sm:py-2 rounded-full transition text-teal-100 hover:text-red-300">Logout</button>

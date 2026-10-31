@@ -2,125 +2,162 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
+    // Menampilkan formulir pemesanan
     public function create()
     {
         return view('pesan');
     }
 
+    // Menyimpan pesanan pelanggan ke database
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama'     => 'required|string|max:255',
             'whatsapp' => 'required|string|max:20',
-            'layanan' => 'required|string',
-            'alamat' => 'required|string',
-            'catatan' => 'nullable|string|max:500',
+            'layanan'  => 'required|string',
+            'alamat'   => 'required|string',
+            'catatan'  => 'nullable|string|max:500',
         ]);
 
-        // Generate nomor resi unik (contoh: AMAR-7842)
-        $resi = 'AMAR-' . rand(1000, 9999);
+        // Mengenali layanan yang dipilih pelanggan
+        $pilihanLayanan = mb_strtolower($validated['layanan']);
 
-        // Tentukan tarif dan nama layanan
-        $isExpress = str_contains(strtolower($validated['layanan']), 'express');
-        $serviceName = $isExpress ? 'Express (Selesai 3 Jam)' : 'Reguler (Selesai 1 Hari)';
-        $priceRate = $isExpress ? 'Rp 15.000 / kg' : 'Rp 8.000 / kg';
+        if (str_contains($pilihanLayanan, 'express')) {
+            $namaLayanan = 'Express';
+        } elseif (str_contains($pilihanLayanan, 'reguler')) {
+            $namaLayanan = 'Reguler';
+        } else {
+            throw ValidationException::withMessages([
+                'layanan' => 'Pilihan layanan tidak valid.',
+            ]);
+        }
 
-        $newOrder = [
-            'id' => time(),
-            'order_code' => $resi,
-            'resi' => $resi,
-            'customer_name' => $validated['nama'],
-            'nama' => $validated['nama'],
-            'whatsapp' => $validated['whatsapp'],
-            'no_hp' => $validated['whatsapp'],
-            'service' => $serviceName,
-            'layanan' => $serviceName,
-            'price_rate' => $priceRate,
-            'address' => $validated['alamat'],
-            'catatan' => !empty($validated['catatan']) ? $validated['catatan'] : 'Tidak ada catatan',
-            'status' => 'Menunggu Penjemputan Kurir',
-            'payment_method' => 'Tunai di Tempat (Cash on Delivery)',
-            'created_at' => now()->format('Y-m-d H:i')
-        ];
+        // Mengambil tarif layanan dari tabel services di database
+        $service = Service::where('name', $namaLayanan)
+            ->where('is_active', true)
+            ->first();
 
-        // Simpan detail order ke session
-        session()->put("order_{$resi}", $newOrder);
-        session()->put("latest_order_resi", $resi);
+        if (! $service) {
+            throw ValidationException::withMessages([
+                'layanan' => 'Layanan yang dipilih sedang tidak tersedia saat ini.',
+            ]);
+        }
 
-        // Hubungkan langsung ke daftar pesanan admin
-        $adminOrders = session()->get('admin_orders', [
-            [
-                'id' => 1,
-                'resi' => 'AMAR-8832',
-                'nama' => 'Budi Santoso',
-                'no_hp' => '081234567890',
-                'layanan' => 'Express (3 Jam)',
-                'status' => 'Sedang Dicuci'
-            ],
-            [
-                'id' => 2,
-                'resi' => 'AMAR-8833',
-                'nama' => 'Siti Aminah',
-                'no_hp' => '089876543210',
-                'layanan' => 'Reguler (1 Hari)',
-                'status' => 'Menunggu Antar'
-            ]
-        ]);
+        // Membuat nomor resi acak yang unik (format: AMAR-XXXX)
+        do {
+            $resi = 'AMAR-' . random_int(1000, 9999);
+        } while (Order::where('resi', $resi)->exists());
 
-        // Sisipkan pesanan baru di posisi teratas
-        array_unshift($adminOrders, [
-            'id' => $newOrder['id'],
-            'resi' => $newOrder['resi'],
-            'nama' => $newOrder['nama'],
-            'no_hp' => $newOrder['whatsapp'],
-            'layanan' => $newOrder['layanan'],
-            'status' => $newOrder['status']
-        ]);
-        session()->put('admin_orders', $adminOrders);
+        // Simpan pesanan, detail layanan, dan log pelacakan dalam satu transaksi DB
+        $order = DB::transaction(function () use ($validated, $service, $resi) {
+            $statusAwal = 'Menunggu Penjemputan Kurir';
 
-        return redirect()->route('lacak.detail', ['resi' => $resi])
-            ->with('success', "Pesanan Anda berhasil dikonfirmasi! Kode Resi: {$resi}. Kurir kami akan segera menuju lokasi Anda.");
+            $order = Order::create([
+                'user_id'       => auth()->id(),
+                'resi'          => $resi,
+                'customer_name' => $validated['nama'],
+                'whatsapp'      => $validated['whatsapp'],
+                'address'       => $validated['alamat'],
+                'notes'         => $validated['catatan'] ?? null,
+                'status'        => $statusAwal,
+            ]);
+
+            $order->orderDetail()->create([
+                'service_id' => $service->id,
+                'weight'     => null,
+                'unit_price' => $service->price_per_kg,
+                'subtotal'   => null,
+            ]);
+
+            $order->trackingLogs()->create([
+                'updated_by'  => auth()->id(),
+                'status'      => $statusAwal,
+                'description' => 'Pesanan berhasil dibuat dan menunggu penjemputan oleh kurir.',
+            ]);
+
+            return $order;
+        });
+
+        // Simpan nomor resi terbaru di session untuk kemudahan akses lacak
+        session()->put('latest_order_resi', $order->resi);
+
+        return redirect()->route('lacak.detail', ['resi' => $order->resi])
+            ->with('success', "Pesanan Anda berhasil dikonfirmasi! Kode Resi: {$order->resi}. Kurir kami akan segera menuju lokasi Anda.");
     }
 
+    // Halaman pencarian pelacakan resi
     public function lacakIndex(Request $request)
     {
-        $resi = $request->input('resi') ?: session('latest_order_resi', 'AMAR-8829');
+        $resi = trim((string) $request->input('resi', ''));
+
+        if ($resi === '') {
+            $resi = session('latest_order_resi', '');
+        }
+
+        if ($resi === '') {
+            // Ambil resi pesanan terbaru jika ada di database sebagai contoh tampilan
+            $latest = Order::latest()->first();
+            if ($latest) {
+                return $this->renderLacakView($latest->resi);
+            }
+            return view('lacak');
+        }
+
         return $this->renderLacakView($resi);
     }
 
+    // Detail pelacakan berdasarkan resi di URL
     public function lacakDetail($resi)
     {
         return $this->renderLacakView($resi);
     }
 
+    // Logika render tampilan lacak (mengambil dari Database dengan fallback)
     private function renderLacakView($resi)
     {
-        // Cari dari sesi customer
-        $dummyOrder = session()->get("order_{$resi}");
+        $order = Order::with(['orderDetail.service', 'trackingLogs'])->where('resi', $resi)->first();
 
-        // Jika tidak ada di sesi customer, cari sinkronisasi dari admin_orders
-        if (!$dummyOrder) {
-            $adminOrders = session()->get('admin_orders', []);
-            $foundInAdmin = collect($adminOrders)->firstWhere('resi', $resi);
+        if ($order) {
+            $detail = $order->orderDetail;
+            $service = $detail?->service;
+            $harga = $detail?->unit_price ?? $service?->price_per_kg ?? 15000;
 
             $dummyOrder = [
-                'order_code' => $resi,
-                'customer_name' => $foundInAdmin['nama'] ?? 'Budi Santoso',
-                'whatsapp' => $foundInAdmin['no_hp'] ?? '081234567890',
-                'service' => $foundInAdmin['layanan'] ?? 'Express (Selesai 3 Jam)',
-                'status' => $foundInAdmin['status'] ?? 'Sedang Dicuci (Mesin #02)',
-                'address' => 'Jl. Merpati No. 12, Kost Putri Asri, Kamar 04',
-                'price_rate' => 'Rp 15.000 / kg',
-                'catatan' => 'Pakaian putih dipisah',
+                'order_code'     => $order->resi,
+                'resi'           => $order->resi,
+                'customer_name'  => $order->customer_name,
+                'nama'           => $order->customer_name,
+                'whatsapp'       => $order->whatsapp,
+                'no_hp'          => $order->whatsapp,
+                'status'         => $order->status,
                 'payment_method' => 'Tunai di Tempat (Cash on Delivery)',
-                'created_at' => now()->format('Y-m-d H:i')
+                'service'        => $service ? $service->name . ' (Selesai ' . $service->duration . ')' : 'Express (Selesai 3 Jam)',
+                'layanan'        => $service ? $service->name . ' (Selesai ' . $service->duration . ')' : 'Express (Selesai 3 Jam)',
+                'price_rate'     => 'Rp ' . number_format((float) $harga, 0, ',', '.') . ' / kg',
+                'address'        => $order->address,
+                'catatan'        => $order->notes ?: 'Tidak ada catatan',
+                'created_at'     => $order->created_at ? $order->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
             ];
+
+            return view('lacak', compact('dummyOrder'));
         }
 
-        return view('lacak', compact('dummyOrder'));
+        // Fallback jika mencari resi dari session lama
+        $sessionOrder = session()->get("order_{$resi}");
+        if ($sessionOrder) {
+            $dummyOrder = $sessionOrder;
+            return view('lacak', compact('dummyOrder'));
+        }
+
+        return redirect()->route('lacak')
+            ->withErrors(['resi' => 'Nomor resi "' . e($resi) . '" tidak ditemukan. Silakan periksa kembali kode resi Anda.']);
     }
 }
