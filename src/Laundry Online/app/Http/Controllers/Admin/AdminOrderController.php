@@ -3,62 +3,68 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminOrderController extends Controller
 {
-    private function getDefaultOrders()
-    {
-        return [
-            [
-                'id' => 1,
-                'resi' => 'AMAR-8832',
-                'nama' => 'Budi Santoso',
-                'no_hp' => '081234567890',
-                'layanan' => 'Express (3 Jam)',
-                'status' => 'Sedang Dicuci'
-            ],
-            [
-                'id' => 2,
-                'resi' => 'AMAR-8833',
-                'nama' => 'Siti Aminah',
-                'no_hp' => '089876543210',
-                'layanan' => 'Reguler (1 Hari)',
-                'status' => 'Menunggu Antar'
-            ]
-        ];
-    }
-
-    // Menampilkan daftar seluruh pesanan untuk dikelola admin
+    // Menampilkan seluruh pesanan dari database
     public function index()
     {
-        $orders = session()->get('admin_orders', $this->getDefaultOrders());
+        $orders = Order::with('orderDetail.service')
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                $service = $order->orderDetail?->service;
+
+                return [
+                    'id' => $order->id,
+                    'resi' => $order->resi,
+                    'nama' => $order->customer_name,
+                    'no_hp' => $order->whatsapp,
+                    'layanan' => $service
+                        ? $service->name . ' (' . $service->duration . ')'
+                        : 'Layanan tidak tersedia',
+                    'status' => $order->status,
+                ];
+            })
+            ->all();
+
         return view('admin.datapesan', compact('orders'));
     }
 
-    // Memperbarui status cucian
+    // Memperbarui status pesanan dari admin
     public function updateStatus(Request $request, $id)
     {
-        $newStatus = $request->input('status', 'Sedang Dicuci');
-        $orders = session()->get('admin_orders', $this->getDefaultOrders());
+        $validated = $request->validate([
+            'status' => 'required|in:Menunggu Cuci,Sedang Dicuci,Menunggu Antar,Selesai',
+        ]);
 
-        foreach ($orders as &$order) {
-            if ($order['id'] == $id) {
-                $order['status'] = $newStatus;
+        DB::transaction(function () use ($id, $validated) {
+            $order = Order::findOrFail($id);
 
-                // Sinkronkan ke session order customer jika ada
-                $resi = $order['resi'];
-                if (session()->has("order_{$resi}")) {
-                    $custOrder = session()->get("order_{$resi}");
-                    $custOrder['status'] = $newStatus;
-                    session()->put("order_{$resi}", $custOrder);
-                }
-                break;
+            // Tidak membuat riwayat baru jika status tidak berubah
+            if ($order->status === $validated['status']) {
+                return;
             }
-        }
 
-        session()->put('admin_orders', $orders);
+            // Memperbarui status pada tabel orders
+            $order->update([
+                'status' => $validated['status'],
+            ]);
 
-        return back()->with('success', "Status pesanan berhasil diperbarui menjadi '{$newStatus}'!");
+            // Menambahkan catatan perubahan pada tracking_logs
+            $order->trackingLogs()->create([
+                'updated_by' => auth()->id(),
+                'status' => $validated['status'],
+                'description' => 'Status pesanan diperbarui oleh admin.',
+            ]);
+        });
+
+        return back()->with(
+            'success',
+            "Status pesanan berhasil diperbarui menjadi '{$validated['status']}'!"
+        );
     }
 }

@@ -1,197 +1,134 @@
 
 {
-    // Schema untuk validasi struktur file Composer.
     "$schema": "https://getcomposer.org/schema.json",
 
-    // Nama proyek Laravel.
     "name": "laravel/laravel",
 
-    // Menentukan bahwa proyek ini merupakan aplikasi.
     "type": "project",
 
-    // Deskripsi singkat mengenai proyek Laravel.
     "description": "The skeleton application for the Laravel framework.",
 
-    // Kata kunci untuk mengidentifikasi proyek.
     "keywords": ["laravel", "framework"],
 
-    // Lisensi yang digunakan oleh proyek.
     "license": "MIT",
 
-    // Daftar package utama yang dibutuhkan aplikasi.
     "require": {
-        // Versi PHP minimum yang dibutuhkan adalah 8.3.
         "php": "^8.3",
 
-        // Framework Laravel versi 13.17 atau kompatibel.
         "laravel/framework": "^13.17",
 
-        // Package Laravel Tinker untuk menjalankan kode PHP melalui terminal.
         "laravel/tinker": "^3.0"
     },
 
-    // Daftar package tambahan untuk kebutuhan pengembangan.
     "require-dev": {
-        // Library untuk menghasilkan data palsu saat pengujian.
         "fakerphp/faker": "^1.23",
 
-        // Laravel Boost untuk membantu proses pengembangan aplikasi.
         "laravel/boost": "*",
 
-        // Laravel Pail untuk melihat log aplikasi secara real-time.
         "laravel/pail": "^1.2.5",
 
-        // Package Laravel Pao untuk kebutuhan pengembangan.
         "laravel/pao": "^1.0.6",
 
-        // Laravel Pint untuk merapikan dan menstandarkan format kode PHP.
         "laravel/pint": "^1.27",
 
-        // Mockery untuk membuat objek tiruan saat pengujian.
         "mockery/mockery": "^1.6",
 
-        // Collision untuk menampilkan error pengujian dengan lebih informatif.
         "nunomaduro/collision": "^8.6",
 
-        // PHPUnit sebagai framework untuk menjalankan unit testing.
         "phpunit/phpunit": "^12.5.12"
     },
 
-    // Mengatur autoload untuk class utama aplikasi.
     "autoload": {
         "psr-4": {
-            // Namespace App diarahkan ke folder app/.
             "App\\": "app/",
 
-            // Namespace Database Factories diarahkan ke folder database/factories/.
             "Database\\Factories\\": "database/factories/",
 
-            // Namespace Database Seeders diarahkan ke folder database/seeders/.
             "Database\\Seeders\\": "database/seeders/"
         }
     },
 
-    // Mengatur autoload khusus untuk kebutuhan pengujian.
     "autoload-dev": {
         "psr-4": {
-            // Namespace Tests diarahkan ke folder tests/.
             "Tests\\": "tests/"
         }
     },
 
-    // Kumpulan perintah otomatis yang dapat dijalankan melalui Composer.
     "scripts": {
-        // Perintah untuk menyiapkan aplikasi setelah instalasi.
         "setup": [
-            // Menginstal seluruh dependency yang dibutuhkan.
             "composer install",
 
-            // Membuat file .env jika belum tersedia.
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
 
-            // Menghasilkan application key untuk keamanan aplikasi.
             "@php artisan key:generate",
 
-            // Menjalankan migrasi database.
             "@php artisan migrate --force",
 
-            // Menginstal dependency JavaScript tanpa menjalankan script instalasi.
             "npm install --ignore-scripts",
 
-            // Membuat hasil build untuk aset frontend.
             "npm run build"
         ],
 
-        // Perintah untuk menjalankan lingkungan pengembangan.
         "dev": [
-            // Menonaktifkan batas waktu proses Composer.
             "Composer\\Config::disableProcessTimeout",
 
-            // Menjalankan server dan proses pengembangan Laravel.
             "@php artisan dev"
         ],
 
-        // Perintah untuk menjalankan pengujian aplikasi.
         "test": [
-            // Membersihkan konfigurasi cache Laravel.
             "@php artisan config:clear --ansi @no_additional_args",
 
-            // Menjalankan seluruh pengujian aplikasi.
             "@php artisan test"
         ],
 
-        // Perintah yang dijalankan setelah autoload Composer dibuat.
         "post-autoload-dump": [
-            // Menjalankan proses otomatis dari Laravel Composer Scripts.
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
 
-            // Mendeteksi dan mendaftarkan package Laravel.
             "@php artisan package:discover --ansi"
         ],
 
-        // Perintah yang dijalankan setelah Composer melakukan update package.
         "post-update-cmd": [
-            // Mempublikasikan aset bawaan Laravel ke dalam proyek.
             "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
         ],
 
-        // Perintah setelah package utama proyek dibuat.
         "post-root-package-install": [
-            // Membuat file .env jika belum tersedia.
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
 
-        // Perintah yang dijalankan setelah proyek Laravel selesai dibuat.
         "post-create-project-cmd": [
-            // Membuat application key secara otomatis.
             "@php artisan key:generate --ansi",
 
-            // Membuat database SQLite jika file database belum tersedia.
             "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
 
-            // Menjalankan migrasi database tanpa menghentikan proses jika gagal.
             "@php artisan migrate --graceful --ansi"
         ],
 
-        // Perintah sebelum package dihapus dari proyek.
         "pre-package-uninstall": [
-            // Menjalankan proses sebelum package Laravel dihapus.
             "Illuminate\\Foundation\\ComposerScripts::prePackageUninstall"
         ]
     },
 
-    // Konfigurasi tambahan khusus Laravel.
     "extra": {
         "laravel": {
-            // Daftar package yang tidak akan didaftarkan secara otomatis.
             "dont-discover": []
         }
     },
 
-    // Konfigurasi utama Composer.
     "config": {
-        // Mengoptimalkan autoloader agar proses pemanggilan class lebih efisien.
         "optimize-autoloader": true,
 
-        // Mengutamakan instalasi package dalam bentuk distribusi.
         "preferred-install": "dist",
 
-        // Mengurutkan package berdasarkan nama agar lebih rapi.
         "sort-packages": true,
 
-        // Mengatur izin penggunaan plugin Composer tertentu.
         "allow-plugins": {
-            // Mengizinkan plugin Pest untuk kebutuhan pengujian.
             "pestphp/pest-plugin": true,
 
-            // Mengizinkan plugin penemuan HTTP client secara otomatis.
             "php-http/discovery": true
         }
     },
 
-    // Menentukan bahwa package yang digunakan harus memiliki stabilitas stable.
     "minimum-stability": "stable",
 
-    // Mengutamakan versi package yang stabil.
     "prefer-stable": true
 }
