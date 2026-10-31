@@ -8,7 +8,7 @@
     <!-- Sisi Kiri: Slogan -->
     <div class="space-y-6">
         <!-- Badge Welcome Sederhana -->
-        <div class="welcome-badge">
+        <div class="inline-flex items-center bg-white text-gray-800 text-xs sm:text-sm font-bold px-4 py-2 rounded-full shadow-md">
             Selamat Datang di Amar Laundry
         </div>
 
@@ -25,7 +25,7 @@
         </p>
 
         <!-- Tombol Aksi Cepat -->
-        <div class="btn">
+        <div class="flex flex-wrap gap-4 pt-2">
             <a href="{{ route('pesan') }}" class="bg-[#ffc72c] hover:bg-yellow-400 text-gray-900 font-extrabold px-8 py-3.5 rounded-full shadow-lg transition transform hover:-translate-y-0.5">
                 Pesan Sekarang
             </a>
