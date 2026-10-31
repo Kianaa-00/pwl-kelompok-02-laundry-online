@@ -14,28 +14,20 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
-    {
-        // Akun Admin
-        User::firstOrCreate(
-            ['email' => 'admin@amarlaundry.com'],
-            [
-                'name' => 'Admin Amar',
-                'whatsapp' => '081234567890',
-                'role' => 'admin',
-                'password' => Hash::make('password'),
-            ]
-        );
+   public function run(): void
+{
+    $akun = [
+        ['Admin Laundry', 'admin@laundry.test', 'admin'],
+        ['Pelanggan Setia', 'pelanggan@laundry.test', 'pelanggan']
+    ];
 
-        // Akun Pelanggan Contoh
-        User::firstOrCreate(
-            ['email' => 'budi@gmail.com'],
-            [
-                'name' => 'Budi Santoso',
-                'whatsapp' => '089876543210',
-                'role' => 'customer',
-                'password' => Hash::make('password'),
-            ]
-        );
+    foreach ($akun as [$nama, $email, $role]) {
+        User::updateOrCreate(['email' => $email], [
+            'name' => $nama,
+            'password' => Hash::make('Laundry#2026'),
+            'role' => $role,
+        ]);
     }
+}
+
 }

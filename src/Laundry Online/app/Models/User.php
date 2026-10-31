@@ -23,6 +23,19 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+    protected $fillable = [
+        'name',
+        'email',
+        'whatsapp',
+        'role',
+        'password',
+    ];
+    
+    public function hasRole(string ...$roles): bool
+{
+    return in_array($this->role, $roles, true);
+}
+
     protected function casts(): array
     {
         return [

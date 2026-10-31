@@ -16,20 +16,29 @@ Route::get('/', [PageController::class, 'index'])->name('dashboard');
 Route::get('/layanan', [PageController::class, 'layanan'])->name('layanan');
 
 // Rute Login & Logout
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [AuthController::class, 'authenticate'])->name('login.process');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])
+    
+    ->middleware('throttle:5,1') // Batasi percobaan login: 5 percobaan per menit
+    ->name('login.process');
+});
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
 
 // Halaman Form Pemesanan
-Route::get('/pesan', [OrderController::class, 'create'])->name('pesan');
-Route::post('/pesan', [OrderController::class, 'store'])->name('pesan.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pesan', [OrderController::class, 'create'])->name('pesan');
+    Route::post('/pesan', [OrderController::class, 'store'])->name('pesan.store');
+});
+
 
 // Halaman Pelacakan (Lacak Status Pesanan)
 Route::get('/lacak', [OrderController::class, 'lacakIndex'])->name('lacak');
 Route::get('/lacak/{resi}', [OrderController::class, 'lacakDetail'])->name('lacak.detail');
 
 // Rute Khusus Admin (Dilindungi Auth Middleware)
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard Admin
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboardadmn', [DashboardController::class, 'index'])->name('dashboardadmn'); // alias
@@ -45,4 +54,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     
     // Laporan Keuangan
     Route::get('/laporan', [FinanceController::class, 'index'])->name('laporan');
+  
+
 });

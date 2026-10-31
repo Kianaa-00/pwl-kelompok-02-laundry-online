@@ -21,7 +21,7 @@
             @csrf
             <div>
                 <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email atau No. WhatsApp</label>
-                <input type="text" name="email_or_phone" value="{{ old('email_or_phone') }}" placeholder="nama@email.com atau 08123456789" required class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#0f8281] outline-none text-sm text-gray-800 transition">
+                <input type="text" name="email" value="{{ old('email') }}" placeholder="nama@email.com atau 08123456789" required class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-[#0f8281] outline-none text-sm text-gray-800 transition">
             </div>
 
             <div>
