@@ -20,7 +20,12 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate(); // Mencegah session fixation
+            $request->session()->regenerate();
+            $user = Auth::user();
+            // Redirect based on role
+            if ($user->role === 'admin') {
+                return redirect()->intended(route('admin.dashboardadmn'));
+            }
             return redirect()->intended(route('dashboard'));
         }
 
