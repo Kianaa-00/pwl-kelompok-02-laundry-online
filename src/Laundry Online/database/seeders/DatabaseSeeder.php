@@ -18,8 +18,7 @@ class DatabaseSeeder extends Seeder
 {
     $akun = [
         ['Admin Laundry', 'admin@laundry.test', 'admin'],
-        ['Kasir Laundry', 'kasir@laundry.test', 'kasir'],
-        ['Pelanggan Setia', 'pelanggan@laundry.test', 'pelanggan'],
+        ['Pelanggan Setia', 'pelanggan@laundry.test', 'pelanggan']
     ];
 
     foreach ($akun as [$nama, $email, $role]) {
