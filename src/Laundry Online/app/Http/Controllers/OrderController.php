@@ -20,11 +20,11 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama'     => 'required|string|max:255',
             'whatsapp' => 'required|string|max:20',
-            'layanan' => 'required|string',
-            'alamat' => 'required|string',
-            'catatan' => 'nullable|string|max:500',
+            'layanan'  => 'required|string',
+            'alamat'   => 'required|string',
+            'catatan'  => 'nullable|string|max:500',
         ]);
 
         // Mengenali layanan yang dipilih pelanggan
@@ -40,122 +40,124 @@ class OrderController extends Controller
             ]);
         }
 
-        // Mengambil tarif layanan dari tabel services
+        // Mengambil tarif layanan dari tabel services di database
         $service = Service::where('name', $namaLayanan)
             ->where('is_active', true)
             ->first();
 
-        if (!$service) {
+        if (! $service) {
             throw ValidationException::withMessages([
-                'layanan' => 'Layanan yang dipilih sedang tidak tersedia.',
+                'layanan' => 'Layanan yang dipilih sedang tidak tersedia saat ini.',
             ]);
         }
 
-        // Membuat nomor resi yang belum digunakan
+        // Membuat nomor resi acak yang unik (format: AMAR-XXXX)
         do {
             $resi = 'AMAR-' . random_int(1000, 9999);
         } while (Order::where('resi', $resi)->exists());
 
-        // Menyimpan pesanan dan detailnya dalam satu transaksi
+        // Simpan pesanan, detail layanan, dan log pelacakan dalam satu transaksi DB
         $order = DB::transaction(function () use ($validated, $service, $resi) {
-            $statusAwal = 'Menunggu Cuci';
+            $statusAwal = 'Menunggu Penjemputan Kurir';
 
             $order = Order::create([
-                'user_id' => auth()->id(),
-                'resi' => $resi,
+                'user_id'       => auth()->id(),
+                'resi'          => $resi,
                 'customer_name' => $validated['nama'],
-                'whatsapp' => $validated['whatsapp'],
-                'address' => $validated['alamat'],
-                'notes' => $validated['catatan'] ?? null,
-                'status' => $statusAwal,
+                'whatsapp'      => $validated['whatsapp'],
+                'address'       => $validated['alamat'],
+                'notes'         => $validated['catatan'] ?? null,
+                'status'        => $statusAwal,
             ]);
 
-            // Satu pesanan memiliki tepat satu detail layanan
             $order->orderDetail()->create([
                 'service_id' => $service->id,
-                'weight' => null,
+                'weight'     => null,
                 'unit_price' => $service->price_per_kg,
-                'subtotal' => null,
+                'subtotal'   => null,
             ]);
 
-            // Mencatat status awal pesanan
             $order->trackingLogs()->create([
-                'updated_by' => auth()->id(),
-                'status' => $statusAwal,
-                'description' => 'Pesanan berhasil dibuat dan menunggu proses pencucian.',
+                'updated_by'  => auth()->id(),
+                'status'      => $statusAwal,
+                'description' => 'Pesanan berhasil dibuat dan menunggu penjemputan oleh kurir.',
             ]);
 
             return $order;
         });
 
-        // Menyimpan resi terakhir agar mudah ditemukan di halaman lacak
+        // Simpan nomor resi terbaru di session untuk kemudahan akses lacak
         session()->put('latest_order_resi', $order->resi);
 
-        return redirect()->route('lacak.detail', [
-            'resi' => $order->resi,
-        ])->with(
-            'success',
-            "Pesanan berhasil dibuat! Kode Resi: {$order->resi}."
-        );
+        return redirect()->route('lacak.detail', ['resi' => $order->resi])
+            ->with('success', "Pesanan Anda berhasil dikonfirmasi! Kode Resi: {$order->resi}. Kurir kami akan segera menuju lokasi Anda.");
     }
 
-    // Menampilkan halaman pencarian resi
+    // Halaman pencarian pelacakan resi
     public function lacakIndex(Request $request)
     {
         $resi = trim((string) $request->input('resi', ''));
 
-        // Jika belum mencari resi, tampilkan halaman pencarian saja
         if ($resi === '') {
+            $resi = session('latest_order_resi', '');
+        }
+
+        if ($resi === '') {
+            // Ambil resi pesanan terbaru jika ada di database sebagai contoh tampilan
+            $latest = Order::latest()->first();
+            if ($latest) {
+                return $this->renderLacakView($latest->resi);
+            }
             return view('lacak');
         }
 
         return $this->renderLacakView($resi);
     }
 
-    // Menampilkan detail pesanan berdasarkan nomor resi
+    // Detail pelacakan berdasarkan resi di URL
     public function lacakDetail($resi)
     {
         return $this->renderLacakView($resi);
     }
 
-    // Mengambil data pesanan dari database untuk halaman lacak
+    // Logika render tampilan lacak (mengambil dari Database dengan fallback)
     private function renderLacakView($resi)
     {
-        $order = Order::with([
-            'orderDetail.service',
-            'trackingLogs',
-        ])->where('resi', $resi)->first();
+        $order = Order::with(['orderDetail.service', 'trackingLogs'])->where('resi', $resi)->first();
 
-        if (!$order) {
-            return redirect()->route('lacak')
-                ->withErrors([
-                    'resi' => 'Nomor resi tidak ditemukan. Periksa kembali nomor resi Anda.',
-                ]);
+        if ($order) {
+            $detail = $order->orderDetail;
+            $service = $detail?->service;
+            $harga = $detail?->unit_price ?? $service?->price_per_kg ?? 15000;
+
+            $dummyOrder = [
+                'order_code'     => $order->resi,
+                'resi'           => $order->resi,
+                'customer_name'  => $order->customer_name,
+                'nama'           => $order->customer_name,
+                'whatsapp'       => $order->whatsapp,
+                'no_hp'          => $order->whatsapp,
+                'status'         => $order->status,
+                'payment_method' => 'Tunai di Tempat (Cash on Delivery)',
+                'service'        => $service ? $service->name . ' (Selesai ' . $service->duration . ')' : 'Express (Selesai 3 Jam)',
+                'layanan'        => $service ? $service->name . ' (Selesai ' . $service->duration . ')' : 'Express (Selesai 3 Jam)',
+                'price_rate'     => 'Rp ' . number_format((float) $harga, 0, ',', '.') . ' / kg',
+                'address'        => $order->address,
+                'catatan'        => $order->notes ?: 'Tidak ada catatan',
+                'created_at'     => $order->created_at ? $order->created_at->format('Y-m-d H:i') : now()->format('Y-m-d H:i'),
+            ];
+
+            return view('lacak', compact('dummyOrder'));
         }
 
-        $detail = $order->orderDetail;
-        $service = $detail?->service;
+        // Fallback jika mencari resi dari session lama
+        $sessionOrder = session()->get("order_{$resi}");
+        if ($sessionOrder) {
+            $dummyOrder = $sessionOrder;
+            return view('lacak', compact('dummyOrder'));
+        }
 
-        $harga = $detail?->unit_price ?? $service?->price_per_kg ?? 0;
-
-        // Menyesuaikan nama data dengan yang digunakan lacak.blade.php
-        $dummyOrder = [
-            'order_code' => $order->resi,
-            'customer_name' => $order->customer_name,
-            'whatsapp' => $order->whatsapp,
-            'status' => $order->status,
-            'payment_method' => 'Tunai di Tempat (Cash on Delivery)',
-            'service' => $service
-                ? $service->name . ' (Selesai ' . $service->duration . ')'
-                : 'Layanan tidak tersedia',
-            'price_rate' => 'Rp ' . number_format((float) $harga, 0, ',', '.') . ' / kg',
-            'address' => $order->address,
-            'catatan' => $order->notes ?: 'Tidak ada catatan',
-            'created_at' => $order->created_at
-                ? $order->created_at->format('Y-m-d H:i')
-                : '-',
-        ];
-
-        return view('lacak', compact('dummyOrder'));
+        return redirect()->route('lacak')
+            ->withErrors(['resi' => 'Nomor resi "' . e($resi) . '" tidak ditemukan. Silakan periksa kembali kode resi Anda.']);
     }
 }

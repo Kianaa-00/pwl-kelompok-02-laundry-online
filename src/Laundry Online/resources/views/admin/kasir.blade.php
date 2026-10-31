@@ -67,11 +67,11 @@
         <div class="space-y-4">
             <div class="bg-teal-800/80 p-4 rounded-2xl border border-teal-700">
                 <p class="text-[10px] uppercase font-bold text-teal-300">Total Transaksi Tunai</p>
-                <h4 class="text-2xl font-black mt-1">14 Nota</h4>
+                <h4 class="text-2xl font-black mt-1">{{ $todayOrdersCount ?? 14 }} Nota</h4>
             </div>
             <div class="bg-teal-800/80 p-4 rounded-2xl border border-teal-700">
                 <p class="text-[10px] uppercase font-bold text-teal-300">Estimasi Pendapatan Kas</p>
-                <h4 class="text-2xl font-black text-[#ffc72c] mt-1">Rp 485.000</h4>
+                <h4 class="text-2xl font-black text-[#ffc72c] mt-1">Rp {{ number_format($todayIncome ?? 485000, 0, ',', '.') }}</h4>
             </div>
         </div>
         <div class="text-[10px] text-teal-300 text-center">

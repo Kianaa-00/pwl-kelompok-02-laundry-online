@@ -53,6 +53,7 @@
                             @csrf
                             @method('PATCH')
                             <select name="status" class="text-xs border-2 border-gray-200 rounded-lg px-2 py-1 outline-none focus:border-teal-600 bg-white">
+                                <option value="Menunggu Penjemputan Kurir" {{ $order['status'] == 'Menunggu Penjemputan Kurir' ? 'selected' : '' }}>Menunggu Penjemputan</option>
                                 <option value="Menunggu Cuci" {{ $order['status'] == 'Menunggu Cuci' ? 'selected' : '' }}>Menunggu Cuci</option>
                                 <option value="Sedang Dicuci" {{ $order['status'] == 'Sedang Dicuci' ? 'selected' : '' }}>Sedang Dicuci</option>
                                 <option value="Menunggu Antar" {{ $order['status'] == 'Menunggu Antar' ? 'selected' : '' }}>Menunggu Antar</option>
