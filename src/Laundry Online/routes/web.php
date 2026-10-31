@@ -27,8 +27,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 
 
 // Halaman Form Pemesanan
-Route::get('/pesan', [OrderController::class, 'create'])->name('pesan');
-Route::post('/pesan', [OrderController::class, 'store'])->name('pesan.store');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pesan', [OrderController::class, 'create'])->name('pesan');
+    Route::post('/pesan', [OrderController::class, 'store'])->name('pesan.store');
+});
+
 
 // Halaman Pelacakan (Lacak Status Pesanan)
 Route::get('/lacak', [OrderController::class, 'lacakIndex'])->name('lacak');
