@@ -30,12 +30,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->n
 Route::middleware(['auth'])->group(function () {
     Route::get('/pesan', [OrderController::class, 'create'])->name('pesan');
     Route::post('/pesan', [OrderController::class, 'store'])->name('pesan.store');
+    Route::get('/lacak', [OrderController::class, 'lacakIndex'])->name('lacak');
+    Route::get('/lacak/{resi}', [OrderController::class, 'lacakDetail'])->name('lacak.detail');
+
 });
+ 
 
 
 // Halaman Pelacakan (Lacak Status Pesanan)
-Route::get('/lacak', [OrderController::class, 'lacakIndex'])->name('lacak');
-Route::get('/lacak/{resi}', [OrderController::class, 'lacakDetail'])->name('lacak.detail');
+
 
 // Rute Khusus Admin (Dilindungi Auth Middleware)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
