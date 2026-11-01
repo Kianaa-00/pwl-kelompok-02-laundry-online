@@ -50,6 +50,23 @@
                 </div>
             </div>
 
+            <!-- === TAMBAHAN: NOTIFIKASI KETIKA PESANAN SELESAI === -->
+
+            @if(isset($dummyOrder['status']) && $dummyOrder['status'] === 'Selesai')
+                <div class="bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-5 text-center space-y-3 shadow-sm">
+                    <div class="w-10 h-10 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto text-sm font-bold shadow">✓</div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-emerald-900">Pesanan Anda Telah Selesai!</h3>
+                        <p class="text-[11px] text-emerald-700 mt-0.5">Terima kasih telah menggunakan layanan Amar Laundry. Cucian Anda sudah bersih dan siap diambil/diantar.</p>
+                    </div>
+                    <div class="pt-1">
+                        <a href="{{ route('dashboard') }}" class="inline-block bg-[#0f8281] hover:bg-teal-800 text-white font-extrabold px-5 py-2 rounded-xl text-xs shadow transition">
+                            Kembali ke Dashboard
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             <!-- Timeline Status -->
             <div class="space-y-3 py-1">
                 <div class="flex items-center space-x-3">

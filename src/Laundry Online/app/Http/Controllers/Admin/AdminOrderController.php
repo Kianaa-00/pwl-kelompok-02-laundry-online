@@ -15,6 +15,7 @@ class AdminOrderController extends Controller
     public function index()
     {
         $orders = Order::with('orderDetail.service')
+            ->where('status', '!=', 'Selesai') //menyembunyikan pesanan yang sudah selesai 
             ->latest()
             ->get()
             ->map(function ($order) {
