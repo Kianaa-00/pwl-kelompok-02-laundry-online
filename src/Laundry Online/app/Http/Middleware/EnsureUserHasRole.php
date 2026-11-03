@@ -13,13 +13,15 @@ class EnsureUserHasRole
      *
      * @param  Closure(Request): (Response)  $next
      */
-   public function handle(Request $request, Closure $next, string ...$roles): Response
-{
-    $user = $request->user();
-    if (! $user || ! $user->hasRole(...$roles)) {
-        abort(403);
-    }
-    return $next($request);
-}
+    public function handle(Request $request, Closure $next, string ...$roles): Response
+    {
+        $user = $request->user();
 
+        // Jika belum login atau tidak memiliki peran yang dipersyaratkan
+        if (! $user || ! $user->hasRole(...$roles)) {
+            abort(403, 'Akses Ditolak: Halaman ini hanya diperuntukkan bagi Administrator Amar Laundry.');
+        }
+
+        return $next($request);
+    }
 }

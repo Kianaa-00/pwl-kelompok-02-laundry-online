@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+@php
+    $user = Auth::user();
+    if (! $user || ! method_exists($user, 'hasRole') || ! $user->hasRole('admin')) {
+        abort(403, 'Akses Ditolak: Anda tidak memiliki hak untuk mengakses panel admin.');
+    }
+@endphp
 
     <!-- NAVBAR ADMIN -->
     <header class="bg-teal-900 text-white shadow-lg relative z-20">

@@ -28,6 +28,9 @@ class DashboardController extends Controller
             'pelanggan_aktif'     => $dbCustomers > 0 ? $dbCustomers : 95,
         ];
 
+        //pesanan yang perlu di proses
+        $incomingOrders = Order::where('status', 'Baru')->latest()->get();
+
         // Ambil pesanan terbaru dari database
         $dbRecent = Order::with('orderDetail.service')->latest()->take(5)->get();
 
@@ -72,6 +75,6 @@ class DashboardController extends Controller
             ];
         }
 
-        return view('admin.dashboardadmn', compact('stats', 'recentOrders'));
+        return view('admin.dashboardadmn', compact('stats', 'recentOrders', 'incomingOrders'));
     }
 }

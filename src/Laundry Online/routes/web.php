@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CashierController;
 use App\Http\Controllers\Admin\AdminOrderController;
 use App\Http\Controllers\Admin\FinanceController;
 
+
 // Rute Halaman Publik / Beranda
 Route::get('/', [PageController::class, 'index'])->name('dashboard');
 

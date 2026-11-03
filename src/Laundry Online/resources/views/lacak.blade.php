@@ -142,6 +142,25 @@
         </div>
         @endisset
 
+        <!-- === KONDISI JIKA RESI DICARI TAPI TIDAK DITEMUKAN / BELUM ADA PESANAN === -->
+    @if(request()->has('resi') && !isset($dummyOrder))
+    <div class="bg-amber-50 border-2 border-amber-400 rounded-2xl p-6 text-center space-y-4 my-4 shadow-sm">
+        <div class="w-10 h-10 bg-amber-400 text-white rounded-full flex items-center justify-center mx-auto text-sm font-bold shadow">!</div>
+        <div>
+            <h3 class="text-sm font-extrabold text-amber-900">Maaf, Anda Harus Melakukan Pemesanan Terlebih Dahulu</h3>
+            <p class="text-[11px] text-amber-700 mt-1">Nomor resi yang Anda cari tidak ditemukan atau Anda belum memiliki riwayat pesanan aktif.</p>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-center gap-2 pt-2">
+            <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-extrabold px-4 py-2.5 rounded-xl text-xs shadow transition">
+                Kembali ke Dashboard
+            </a>
+            <a href="{{ route('pesan') }}" class="bg-[#0f8281] hover:bg-teal-800 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs shadow transition">
+                Buat Pesanan
+            </a>
+        </div>
+    </div>
+    @endif
+
         <div class="mt-6 text-center text-xs text-gray-500">
             <p>Ingin pesan cucian baru lagi? <a href="{{ route('pesan') }}" class="text-teal-600 font-bold hover:underline">Formulir Pesan</a></p>
         </div>

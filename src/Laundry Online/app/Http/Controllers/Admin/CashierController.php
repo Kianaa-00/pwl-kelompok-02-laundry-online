@@ -32,13 +32,13 @@ class CashierController extends Controller
     // Memproses input transaksi baru dari kasir fisik (Walk-in) ke Database
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'customer_name' => 'required|string|max:255',
             'whatsapp'      => 'required|string|max:20',
             'service_type'  => 'required|string',
             'weight'        => 'required|numeric|min:0.1',
         ]);
-
+        
         $serviceName = strtolower((string) $request->service_type) === 'express' ? 'Express' : 'Reguler';
         $service = Service::where('name', $serviceName)->first();
 
